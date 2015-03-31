@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #define BUFSIZE 42
-#define ADRESS
+#define ADRESS 2
 
 unsigned int CRC16Table[256]={
     0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,
@@ -66,6 +66,18 @@ char ft_write_file(unsigned int chr)
 	close(fd);
 	return (0);
 }
+int ft_putnbr(int num)
+{
+        if (num < 0)
+        {
+                write(1, "-",1);
+                num = num * -1;
+        }
+        if (num/10)
+                ft_putnbr(num/10);
+        num = (num % 10)+ '0';
+        write(1, &num, 1);
+}
 
 int main()
 {
@@ -85,20 +97,26 @@ int main()
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd, TCSANOW, &options);
 	write(1, "lecture\n",8); 
-	len = read(fd, buf, BUFSIZE);
+	while(len = read(fd, buf, 42))
+	{
+		ft_putnbr(len);
+		write(1, "\n", 1);
+		write(1, buf, 8);
+	}
 	if (CRC16Block(buf, 0xffff,len) == buf[len - 1])
 		write(1, "ok\n", 3);
 	else
-		return (write(1, "ntm\n", 4));
+		write(1, "ntm1\n", 5);
 	if (ADRESS == buf[i])
 		i++;
 	else
-		return (write(1, "ntm\n", 4));
+		write(1, "ntm2\n", 5);
 	while (i < len)
 	{
 		ft_write_file(buf[i]);
 		ft_write_file('|');
 		i++;
 	}
+		ft_write_file('\n');
 	return (0);
 }
