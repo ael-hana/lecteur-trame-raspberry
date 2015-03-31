@@ -4,8 +4,11 @@
 #include <termios.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
 #define BUFSIZE 42
 #define ADRESS 2
+#define LENTRAME 10
 
 unsigned int CRC16Table[256]={
     0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,
@@ -82,13 +85,14 @@ int ft_putnbr(int num)
 int main()
 {
 	char *str = "Error - Unable to open UART.  Ensure it is not in use by another application\n";
-	unsigned int buf[BUFSIZE];
+	int *buf;
 	int len;
+	int chr;
 	int i = 0;
-	int fd = open("/dev/ttyAMA0", O_RDWR);
-	if (fd == -1)
-		write(2, str, ft_strlen(str));
-	struct termios options;
+	int fd;
+	if ((fd = serialOpen ("/dev/ttyAMA0", 115200)) < 0)
+		return (write(2, str, ft_strlen(str));
+	/*struct termios options;
 	tcgetattr(fd, &options);
 	options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
 	options.c_iflag = IGNPAR;
@@ -96,13 +100,21 @@ int main()
 	options.c_lflag = 0;
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd, TCSANOW, &options);
+	*/
+	buf = NULL;
+	len = 0;
 	write(1, "lecture\n",8); 
-	while(len = read(fd, buf, 42))
-	{
-		ft_putnbr(len);
-		write(1, "\n", 1);
-		write(1, buf, 8);
-	}
+	while (len < LENTRAME)
+		if (serialDataAvail())
+		{
+			chr = serialGetchar(fd);
+			++len;
+			buf = realloc(buf, len);
+			buf[len]= chr;
+			/*ft_putnbr(len);
+			write(1, "\n", 1);
+			write(1, buf, 8);*/
+		}
 	if (CRC16Block(buf, 0xffff,len) == buf[len - 1])
 		write(1, "ok\n", 3);
 	else
