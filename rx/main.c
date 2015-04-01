@@ -88,7 +88,6 @@ int main()
 	int *buf;
 	int len;
 	int chr;
-	int i = 0;
 	int fd;
 	if ((fd = serialOpen ("/dev/ttyAMA0", 115200)) < 0)
 		return (write(2, str, ft_strlen(str));
@@ -108,24 +107,22 @@ int main()
 		if (serialDataAvail())
 		{
 			chr = serialGetchar(fd);
-			++len;
-			buf = realloc(buf, len + 2);
+			buf = realloc(buf, len + 3);
 			buf[len]= chr;
+			++len;
 		}
 			/*ft_putnbr(len);
 			write(1, "\n", 1);
 			write(1, buf, 8))*/
-	buf[len + 1] = '\n';
-	buf[len + 2] = '\0';
 	if (CRC16Block(buf, 0xffff,len) == buf[len - 1])
 		write(1, "ok\n", 3);
 	else
 		write(1, "PBR1\n", 5);
 	
-	if (ADRESS == buf[i])
-		i++;
-	else
-		write(1, "PBR2\n", 5);
+	if (ADRESS == buf[0])
+		return (write(1, "PBR2\n", 5));
+	buf[len + 1] = '\n';
+	buf[len + 2] = '\0';
 	ft_write_file(buf);
 	return (0);
 }
