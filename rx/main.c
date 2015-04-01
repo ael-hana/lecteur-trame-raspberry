@@ -60,12 +60,12 @@ int ft_strlen(char *str)
 	while (str[x++]);
 	return (x);
 }
-char ft_write_file(unsigned int chr)
+char ft_write_file(int *chr)
 {
 	int fd = open("/var/www/value.txt", O_WRONLY | O_CREAT | O_APPEND);
 	if (fd == -1)
 		return (1);
-	write(fd, &chr, 1);
+	write(fd, chr, ft_strlen(chr));
 	close(fd);
 	return (0);
 }
@@ -109,26 +109,23 @@ int main()
 		{
 			chr = serialGetchar(fd);
 			++len;
-			buf = realloc(buf, len);
+			buf = realloc(buf, len + 2);
 			buf[len]= chr;
+		}
 			/*ft_putnbr(len);
 			write(1, "\n", 1);
-			write(1, buf, 8);*/
-		}
+			write(1, buf, 8))*/
+	buf[len + 1] = '\n';
+	buf[len + 2] = '\0';
 	if (CRC16Block(buf, 0xffff,len) == buf[len - 1])
 		write(1, "ok\n", 3);
 	else
-		write(1, "ntm1\n", 5);
+		write(1, "PBR1\n", 5);
+	
 	if (ADRESS == buf[i])
 		i++;
 	else
-		write(1, "ntm2\n", 5);
-	while (i < len)
-	{
-		ft_write_file(buf[i]);
-		ft_write_file('|');
-		i++;
-	}
-		ft_write_file('\n');
+		write(1, "PBR2\n", 5);
+	ft_write_file(buf);
 	return (0);
 }
