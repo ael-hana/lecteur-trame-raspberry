@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -60,15 +61,24 @@ int ft_strlen(char *str)
 	while (str[x++]);
 	return (x);
 }
+
+int	ft_strlen_int(int *str)
+{
+	int x = 0;
+	while (str[x++]);
+	return (x);
+}
+
 char ft_write_file(int *chr)
 {
 	int fd = open("/var/www/value.txt", O_WRONLY | O_CREAT | O_APPEND);
 	if (fd == -1)
 		return (1);
-	write(fd, chr, ft_strlen(chr));
+	write(fd, chr, ft_strlen_int(chr));
 	close(fd);
 	return (0);
 }
+
 int ft_putnbr(int num)
 {
         if (num < 0)
@@ -82,42 +92,37 @@ int ft_putnbr(int num)
         write(1, &num, 1);
 }
 
-int main()
+int main(void)
 {
-	char *str = "Error - Unable to open UART.  Ensure it is not in use by another application\n";
+	char *str
+	str = "Error - Unable to open UART.  Ensure it is not in use by another application\n";
 	int *buf;
 	int len;
 	int chr;
 	int fd;
-	if ((fd = serialOpen ("/dev/ttyAMA0", 115200)) < 0)
-		return (write(2, str, ft_strlen(str));
-	/*struct termios options;
-	tcgetattr(fd, &options);
-	options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
-	options.c_iflag = IGNPAR;
-	options.c_oflag = 0;
-	options.c_lflag = 0;
-	tcflush(fd, TCIFLUSH);
-	tcsetattr(fd, TCSANOW, &options);
-	*/
+	fd = serialOpen("/dev/ttyAMA0", 115200);
+ 	if (fd == -1)
+	{
+		write(2, str, ft_strlen(str);
+		return (1);
+	}
 	buf = NULL;
 	len = 0;
 	write(1, "lecture\n",8); 
-	while (len < LENTRAME)
-		if (serialDataAvail())
+ 	while (len < LENTRAME)
+	{
+		if (serialDataAvail(fd) == 1)
 		{
 			chr = serialGetchar(fd);
-			buf = realloc(buf, len + 3);
+			buf = (int *)realloc(buf, len + 3);
 			buf[len]= chr;
 			++len;
-		}
-			/*ft_putnbr(len);
-			write(1, "\n", 1);
-			write(1, buf, 8))*/
+		}	
+	}		
 	if (CRC16Block(buf, 0xffff,len) == buf[len - 1])
 		write(1, "ok\n", 3);
 	else
-		write(1, "PBR1\n", 5);
+		write(1, "PBR1\n", 5);	
 	
 	if (ADRESS == buf[0])
 		return (write(1, "PBR2\n", 5));
