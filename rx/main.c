@@ -94,7 +94,7 @@ int ft_putnbr(int num)
 
 int main(void)
 {
-	char *str
+	char *str;
 	str = "Error - Unable to open UART.  Ensure it is not in use by another application\n";
 	int *buf;
 	int len;
@@ -103,7 +103,7 @@ int main(void)
 	fd = serialOpen("/dev/ttyAMA0", 115200);
  	if (fd == -1)
 	{
-		write(2, str, ft_strlen(str);
+		write(2, str, ft_strlen(str));
 		return (1);
 	}
 	buf = NULL;
@@ -114,8 +114,8 @@ int main(void)
 		if (serialDataAvail(fd) == 1)
 		{
 			chr = serialGetchar(fd);
-			buf = (int *)realloc(buf, len + 3);
-			buf[len]= chr;
+			buf = realloc(buf, len + 3);
+			buf[len] = chr;
 			++len;
 		}	
 	}		
