@@ -2,10 +2,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <termios.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <wiringPi.h>
 #include <wiringSerial.h>
 #define BUFSIZE 42
 #define ADRESS 2
@@ -62,14 +60,14 @@ int ft_strlen(char *str)
 	return (x);
 }
 
-int	ft_strlen_int(int *str)
+int	ft_strlen_int(unsigned int *str)
 {
 	int x = 0;
 	while (str[x++]);
 	return (x);
 }
 
-char ft_write_file(int *chr)
+char ft_write_file(unsigned int *chr)
 {
 	int fd = open("/var/www/value.txt", O_WRONLY | O_CREAT | O_APPEND);
 	if (fd == -1)
@@ -79,7 +77,7 @@ char ft_write_file(int *chr)
 	return (0);
 }
 
-int ft_putnbr(int num)
+void ft_putnbr(int num)
 {
         if (num < 0)
         {
@@ -96,9 +94,9 @@ int main(void)
 {
 	char *str;
 	str = "Error - Unable to open UART.  Ensure it is not in use by another application\n";
-	int *buf;
-	int len;
-	int chr;
+	unsigned int *buf;
+	unsigned int len;
+	unsigned int chr;
 	int fd;
 	fd = serialOpen("/dev/ttyAMA0", 115200);
  	if (fd == -1)
@@ -113,13 +111,13 @@ int main(void)
 	{
 		if (serialDataAvail(fd) == 1)
 		{
-			chr = serialGetchar(fd);
-			buf = realloc(buf, len + 3);
+			chr = (unsigned int)serialGetchar(fd);
+			buf = realloc(buf,(sizeof(unsigned int) * (len + 3)));
 			buf[len] = chr;
 			++len;
 		}	
-	}		
-	if (CRC16Block(buf, 0xffff,len) == buf[len - 1])
+	}
+	if (CRC16Block(buf, 0xffff, len) == buf[len - 1])
 		write(1, "ok\n", 3);
 	else
 		write(1, "PBR1\n", 5);	
