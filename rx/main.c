@@ -7,7 +7,7 @@
 #include <wiringSerial.h>
 #define BUFSIZE 42
 #define ADRESS 2
-#define LENTRAME 10
+#define LENTRAME 13
 
 unsigned int CRC16Table[256]={
     0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,
@@ -127,5 +127,6 @@ int main(void)
 		return (write(1, "PBR2\n", 5));
 	if (ft_write_file(buf))
 		return (write(2, "ERROR OPEN FILES\n", 17));
+	write(1,"succes :)\n", 10);
 	return (0);
 }
