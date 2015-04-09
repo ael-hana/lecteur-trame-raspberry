@@ -72,7 +72,8 @@ char ft_write_file(unsigned int *chr)
 	int fd = open("/var/www/value.txt", O_WRONLY | O_CREAT | O_APPEND);
 	if (fd == -1)
 		return (1);
-	write(fd, chr, ft_strlen_int(chr));
+	while ()
+		write(fd, chr, (chr));
 	close(fd);
 	return (0);
 }
@@ -108,24 +109,23 @@ int main(void)
 	len = 0;
 	write(1, "lecture\n",8); 
  	while (len < LENTRAME)
-	{
 		if (serialDataAvail(fd) == 1)
 		{
 			chr = (unsigned int)serialGetchar(fd);
-			buf = realloc(buf,(sizeof(unsigned int) * (len + 3)));
+			buf = realloc(buf,(sizeof(unsigned int) * (len + 4)));
 			buf[len] = chr;
-			++len;
+			buf[len + 1] = '|';
+			len += 2;
 		}	
-	}
+	buf[len + 1] = '\n';
+	buf[len + 2] = '\0';
 	if (CRC16Block(buf, 0xffff, len) == buf[len - 1])
 		write(1, "ok\n", 3);
 	else
 		write(1, "PBR1\n", 5);	
-	
 	if (ADRESS == buf[0])
 		return (write(1, "PBR2\n", 5));
-	buf[len + 1] = '\n';
-	buf[len + 2] = '\0';
-	ft_write_file(buf);
+	if (ft_write_file(buf))
+		return (write(2, "ERROR OPEN FILES\n", 17));
 	return (0);
 }
