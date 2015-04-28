@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <wiringSerial.h>
+#include <mysql/mysql.h>
 #define BUFSIZE 42
 #define ADRESS 2
 #define LENTRAME 13
@@ -69,11 +70,11 @@ int	ft_strlen_int(unsigned int *str)
 
 char ft_write_file(unsigned int *chr)
 {
-	int fd = open("/var/www/value.txt", O_WRONLY | O_CREAT | O_APPEND);
+	int fd;
+	fd = open("/var/www/value.txt", O_WRONLY | O_CREAT | O_APPEND);
 	if (fd == -1)
 		return (1);
-	while ()
-		write(fd, chr, (chr));
+	write(fd, chr, ft_strlen_int(chr));
 	close(fd);
 	return (0);
 }
@@ -90,8 +91,7 @@ void ft_putnbr(int num)
         num = (num % 10)+ '0';
         write(1, &num, 1);
 }
-
-int main(void)
+int main(int ac, char **av)
 {
 	char *str;
 	str = "Error - Unable to open UART.  Ensure it is not in use by another application\n";
