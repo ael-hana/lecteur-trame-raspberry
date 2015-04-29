@@ -91,7 +91,25 @@ void ft_putnbr(int num)
         num = (num % 10)+ '0';
         write(1, &num, 1);
 }
-int main(int ac, char **av)
+unsigned int	ft_rm_p(unsigned int *str)
+{
+	unsigned int	*buf;
+	int	i;
+
+	i = 0;
+	while (*str)
+	{
+		if (*str != '|' && *str != '\n' && *str != '\0')
+		{
+			buf = realloc(buf, sizeof(unsigned int) * (i));
+			buf[i] = *str;
+		}
+		++str;
+		++i;
+	}
+	return (buf);
+}
+int main(int ac, unsigned int **av)
 {
 	char *str;
 	str = "Error - Unable to open UART.  Ensure it is not in use by another application\n";
@@ -107,8 +125,17 @@ int main(int ac, char **av)
 	}
 	buf = NULL;
 	len = 0;
-	write(1, "lecture\n",8); 
- 	while (len < LENTRAME)
+	write(1, "lecture\n",8);
+	if (ac - 1)
+		while (len < LENTRAME) 
+		{
+			buf = realloc(buf,(sizeof(unsigned int) * (len + 4)));
+ 			buf[len]= av[1][0];
+			buf[len + 1] = '|';
+ 			++av[1];
+			len += 2;
+		}
+	while (len < LENTRAME)
 		if (serialDataAvail(fd) == 1)
 		{
 			chr = (unsigned int)serialGetchar(fd);
@@ -119,10 +146,16 @@ int main(int ac, char **av)
 		}	
 	buf[len + 1] = '\n';
 	buf[len + 2] = '\0';
-	if (CRC16Block(buf, 0xffff, len) == buf[len - 1])
-		write(1, "ok\n", 3);
+	if (ac - 1)
+		if (CRC16Block(buf, 0xffff, len) == buf[len - 1])
+			write(1, "ok\n", 3);
+		else
+			write(1, "PBR1\n", 5);	
 	else
-		write(1, "PBR1\n", 5);	
+		if (CRC16Block(ft_rm_p(buf), 0xffff, len) == buf[len - 1])
+			write(1, "ok\n", 3);
+		else
+			write(1, "PBR1\n", 5);
 	if (ADRESS == buf[0])
 		return (write(1, "PBR2\n", 5));
 	if (ft_write_file(buf))
