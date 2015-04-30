@@ -67,14 +67,30 @@ int	ft_strlen_int(unsigned int *str)
 	while (str[x++]);
 	return (x);
 }
-
+void	ft_number_string(int num, int fd)
+{
+	if (num < 0)
+	{
+		num *= -1;
+		write(1, "-", 1);
+	}
+	if (num / 10)
+		ft_number_string(num/10, fd);
+	write(fd, &((num % 10) + '0'), 1);
+}
 char ft_write_file(unsigned int *chr)
 {
 	int fd;
 	fd = open("/var/www/value.txt", O_WRONLY | O_CREAT | O_APPEND);
 	if (fd == -1)
 		return (1);
-	write(fd, chr, ft_strlen_int(chr));
+	if (*chr != '|')
+		write(fd, chr++, 1);
+	else
+	{
+		ft_number_string(*chr, fd);
+		++chr;
+	}
 	close(fd);
 	return (0);
 }
